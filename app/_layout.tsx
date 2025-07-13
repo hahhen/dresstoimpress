@@ -1,7 +1,7 @@
-import { Stack } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 import * as React from 'react';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/lib/constants';
@@ -11,6 +11,10 @@ import { Inter_400Regular, Inter_600SemiBold, useFonts } from '@expo-google-font
 import * as SplashScreen from 'expo-splash-screen';
 import { Text } from '~/components/ui/text';
 import { PortalHost } from '@rn-primitives/portal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet, { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { KindeAuthProvider } from '@kinde/expo';
+import Header from '~/components/header';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -34,7 +38,6 @@ export default function RootLayout() {
         Inter_600SemiBold,
     });
     const hasMounted = React.useRef(false);
-    const insets = useSafeAreaInsets();
     const { colorScheme, isDarkColorScheme } = useColorScheme();
     const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
 
@@ -65,32 +68,38 @@ export default function RootLayout() {
         return null;
     }
 
+    const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
+
     return (
         <>
-            <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-                <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}
-                />
-                <SafeAreaView className='flex-1 bg-background px-7'>
-                    <Stack
-                    // screenOptions={{
-                    //     headerShown: false,
-                    // }}
-                    >
-                        <Stack.Screen name="auth" />
-                        <Stack.Screen options={{
-                            header(props) {
-                                return (
-                                    <View className='h-16 flex flex-row items-center justify-between'>
-                                        <Text className='text-muted'>tiny closet</Text>
-                                        <View className='bg-secondary rounded-full w-12 h-12'></View>
-                                    </View>
-                                )
-                            },
-                        }} name="(tabs)" />
-
-                    </Stack>
-                </SafeAreaView>
-            </ThemeProvider>
+            <KindeAuthProvider
+                config={{
+                    domain: process.env.EXPO_PUBLIC_KINDE_ISSUER_URL,
+                    clientId: process.env.EXPO_PUBLIC_KINDE_CLIENT_ID,
+                }}
+            >
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+                        <BottomSheetModalProvider>
+                            <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}
+                            />
+                            <SafeAreaView className='flex-1 bg-background px-7'>
+                                <Stack
+                                // screenOptions={{
+                                //     headerShown: false,
+                                // }}
+                                >
+                                    <Stack.Screen options={{ 
+                                        header: () => (
+                                            <Header />
+                                        )
+                                    }} name="(tabs)" />
+                                </Stack>
+                            </SafeAreaView>
+                        </BottomSheetModalProvider>
+                    </ThemeProvider>
+                </GestureHandlerRootView>
+            </KindeAuthProvider>
             <PortalHost />
         </>
     )

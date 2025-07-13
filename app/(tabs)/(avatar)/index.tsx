@@ -14,10 +14,12 @@ import Clear from "~/assets/icons/Clear";
 import Dice from "~/assets/icons/Dice";
 import Caret from "~/assets/icons/Caret";
 import ClothingSelectionDialog, { PieceType } from "~/components/clothingSelectionDialog";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 
 export default function AvatarPage() {
     const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
     const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
+    const bottomSheetRef = React.useRef<BottomSheet>(null);
 
     const buttons = {
         left: [

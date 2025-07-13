@@ -1,4 +1,4 @@
-import { FlatList, View } from "react-native";
+import { View } from "react-native";
 import * as React from "react";
 import { Text } from "~/components/ui/text";
 import { cn } from "~/lib/utils";
@@ -12,11 +12,23 @@ import {
 import { createRows } from "~/lib/utils";
 import { useAtom } from "jotai";
 import { selectedPiecesAtom } from "~/lib/atoms";
+import { FlatList, GestureHandlerRootView, Pressable } from 'react-native-gesture-handler';
+import BottomSheet, { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { NAV_THEME } from "~/lib/constants";
+import { useColorScheme } from "~/lib/useColorScheme";
+import { LinearGradient } from "expo-linear-gradient";
 
 export type PieceType = "head" | "top" | "bottom" | "shoes" | "accessories" | "outfits";
 
 export default function ClothingSelectionDialog({ asChild = false, children, label, icon, pieceType }: { asChild?: boolean, children: React.ReactNode, label: string, icon?: React.ReactNode, pieceType: PieceType }) {
-    const [selectedPieces, setSelectedPieces] = useAtom(selectedPiecesAtom)
+    const [selectedPieces, setSelectedPieces] = useAtom(selectedPiecesAtom);
+    const { isDarkColorScheme } = useColorScheme();
+    const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
+    const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
+
+    const handlePresentModalPress = React.useCallback(() => {
+        bottomSheetModalRef.current?.present();
+    }, []);
 
     const handlePieceSelection = (pieceId: string) => {
         if (pieceId != "outfits")
@@ -31,37 +43,61 @@ export default function ClothingSelectionDialog({ asChild = false, children, lab
             });
     };
     return (
-        <Dialog>
-            <DialogTrigger asChild={asChild}>
+        <>
+            <Pressable onPress={handlePresentModalPress}>
                 {children}
-            </DialogTrigger>
-            <DialogContent className='sm:max-w-[425px] h-[85%] rounded-xl relative'>
-                <DialogHeader className="flex-row">
-                    <View className="flex flex-col items-center h-14">
-                        {icon}
-                        <Text className="text-secondary-foreground native:text-[0.6rem] native:leading-none">{label}</Text>
+            </Pressable>
+            <BottomSheetModal
+                index={1}
+                enableDismissOnClose={true}
+                stackBehavior="replace"
+                handleIndicatorStyle={{ backgroundColor: theme.secondaryText }}
+                backgroundStyle={{ backgroundColor: theme.secondary }}
+                ref={bottomSheetModalRef}
+                snapPoints={["90%"]}
+            >
+                <BottomSheetView
+                    className="flex-1 p-6">
+                    <View className="flex flex-1 items-start gap-4 relative">
+                        <View className="flex flex-col items-center h-14">
+                            {icon}
+                            <Text className="text-secondary-foreground native:text-[0.6rem] native:leading-none">{label}</Text>
+                        </View>
+                        <View className="h-[70vh] w-full">
+                            <FlatList
+                                className="rounded-2xl"
+                                data={
+                                    createRows(
+                                        [1, 2, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 33, 3, 3,], 3)
+                                }
+                                numColumns={3}
+                                renderItem={({ item }: { item: number }) => {
+                                    if (item == 0)
+                                        return <View className="flex-1 m-1" />
+                                    return (
+                                        <Button
+                                            className={cn("flex-1 m-1 bg-muted aspect-square rounded-xl")}
+                                            size={"custom"}
+                                            onPress={() => { }}
+                                        >
+                                        </Button>
+                                    )
+                                }} />
+                            <LinearGradient
+                                colors={['transparent', theme.secondary]}
+                                style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    height: 32,
+                                    pointerEvents: 'none',
+                                }}
+                            />
+                        </View>
                     </View>
-                </DialogHeader>
-                <FlatList
-                    data={
-                        createRows(
-                            [1, 2, 3, 4, 5, 6, 7], 3)
-                    }
-                    numColumns={3}
-                    renderItem={({ item }: { item: number }) => {
-                        if (item == 0)
-                            return <View className="flex-1 m-1" />
-                        return (
-                            <Button
-                                className={cn("flex-1 m-1 bg-muted aspect-square rounded-xl")}
-                                size={"custom"}
-                                onPress={() => { }}
-                            >
-                            </Button>
-                        )
-                    }} />
-                <View className="h-24 shadow-[0px_-5px_7.7px_0px_var(--secondary,#F9F7FD)]"></View>
-            </DialogContent>
-        </Dialog>
+                </BottomSheetView>
+            </BottomSheetModal>
+        </>
     )
 }

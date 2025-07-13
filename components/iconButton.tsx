@@ -5,12 +5,13 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { NAV_THEME } from "~/lib/constants";
 import { cn } from "~/lib/utils";
 import { Button } from '~/components/ui/button';
+import BottomSheet from "@gorhom/bottom-sheet";
 
 const IconButton = React.forwardRef(function IconButton(
-  { children, className, ...props }: { children?: React.ReactNode; className?: string } & React.ComponentProps<typeof Button>,
-  ref: React.Ref<any>
+    { children, className, buttonClassName, ...props }: { children?: React.ReactNode; className?: string, buttonClassName?: string } & React.ComponentProps<typeof Button>,
+    ref: React.Ref<BottomSheet>
 ) {
-  const { isDarkColorScheme } = useColorScheme();
+    const { isDarkColorScheme } = useColorScheme();
     const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
     const scale = React.useRef(new Animated.Value(1)).current;
 
@@ -27,14 +28,15 @@ const IconButton = React.forwardRef(function IconButton(
             useNativeDriver: true,
         }).start();
     };
+
     return (
         <Animated.View style={{ transform: [{ scale }] }} className={cn("w-[5.5rem] aspect-square", className)}>
             <Button
-                ref={ref}
                 {...props}
+                onPress={props.onPress}
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
-                className="overflow-hidden aspect-square border border-secondary-foreground w-[5.5rem] rounded-[12px] flex justify-end py-2 relative"
+                className={cn("overflow-hidden aspect-square border border-secondary-foreground w-[5.5rem] rounded-[12px] flex justify-end py-2 relative", buttonClassName)}
                 size={"custom"}
                 variant={"secondary"}
             >
@@ -50,7 +52,7 @@ const IconButton = React.forwardRef(function IconButton(
     )
 })
 
-export function FreeHeightIconButton({ className, children }: { className?: string, children?: React.ReactNode }) {
+export function FreeHeightIconButton({ className, children, onPress }: { className?: string, children?: React.ReactNode, onPress?: () => void }) {
     const { isDarkColorScheme } = useColorScheme();
     const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
     const scale = React.useRef(new Animated.Value(1)).current;
@@ -73,6 +75,7 @@ export function FreeHeightIconButton({ className, children }: { className?: stri
             <Button
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
+                onPress={onPress}
                 className={cn(className, "overflow-hidden border border-secondary-foreground w-[5.5rem] rounded-[12px] flex py-2 relative")}
                 size={"custom"}
                 variant={"secondary"}
@@ -89,7 +92,7 @@ export function FreeHeightIconButton({ className, children }: { className?: stri
     )
 }
 
-export function FreeSizeIconButton({ className, children }: { className?: string, children?: React.ReactNode }) {
+export function FreeSizeIconButton({ className, children, onPress }: { className?: string, children?: React.ReactNode, onPress?: () => void }) {
     const { isDarkColorScheme } = useColorScheme();
     const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
     const scale = React.useRef(new Animated.Value(1)).current;
@@ -112,6 +115,7 @@ export function FreeSizeIconButton({ className, children }: { className?: string
             <Button
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
+                onPress={onPress}
                 className={cn(className, "overflow-hidden border border-secondary-foreground rounded-[12px] flex py-2 relative")}
                 size={"custom"}
                 variant={"secondary"}
