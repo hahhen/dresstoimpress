@@ -1,4 +1,4 @@
-import { Link, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, Pressable, View } from 'react-native';
@@ -71,37 +71,48 @@ export default function RootLayout() {
     const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
 
     return (
-        <>
-            <KindeAuthProvider
-                config={{
-                    domain: process.env.EXPO_PUBLIC_KINDE_ISSUER_URL,
-                    clientId: process.env.EXPO_PUBLIC_KINDE_CLIENT_ID,
-                }}
-            >
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                    <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-                        <BottomSheetModalProvider>
-                            <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}
-                            />
-                            <SafeAreaView className='flex-1 bg-background px-7'>
-                                <Stack
-                                // screenOptions={{
-                                //     headerShown: false,
-                                // }}
-                                >
-                                    <Stack.Screen options={{ 
-                                        header: () => (
-                                            <Header />
-                                        )
-                                    }} name="(tabs)" />
-                                </Stack>
-                            </SafeAreaView>
-                        </BottomSheetModalProvider>
-                    </ThemeProvider>
-                </GestureHandlerRootView>
-            </KindeAuthProvider>
+        <KindeAuthProvider
+            callbacks={
+                {
+                    onSuccess: async (user, state, context) => {
+                        console.log("User authenticated:", user);
+                    },
+                    onError: async(error, state, context) => {
+                        console.error("Authentication error:", error);
+                    },
+                    onEvent: async (event, state, context) => {
+                        console.log("Authentication event:", event);
+                    }
+                }
+            }
+            config={{
+                domain: process.env.EXPO_PUBLIC_KINDE_ISSUER_URL,
+                clientId: process.env.EXPO_PUBLIC_KINDE_CLIENT_ID,
+            }}
+        >
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+                    <BottomSheetModalProvider>
+                        <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}
+                        />
+                        <SafeAreaView className='flex-1 bg-background px-7'>
+                            <Stack
+                            // screenOptions={{
+                            //     headerShown: false,
+                            // }}
+                            >
+                                <Stack.Screen options={{
+                                    header: () => (
+                                        <Header />
+                                    )
+                                }} name="(tabs)" />
+                            </Stack>
+                        </SafeAreaView>
+                    </BottomSheetModalProvider>
+                </ThemeProvider>
+            </GestureHandlerRootView>
             <PortalHost />
-        </>
+        </KindeAuthProvider>
     )
 }
 

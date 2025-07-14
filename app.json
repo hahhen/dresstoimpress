@@ -1,8 +1,8 @@
 {
   "expo": {
-    
-    "name": "dresstoimpress",
-    "slug": "dresstoimpress",
+    "name": "tiny closet",
+    "scheme": "tinycloset",
+    "slug": "tinycloset",
     "version": "1.0.0",
     "web": {
       "favicon": "./assets/favicon.png"
@@ -36,6 +36,13 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "90360db8-0eae-4641-bf00-aea87e7703bf"
+      }
+    },
+    "owner": "hahhen"
   }
 }

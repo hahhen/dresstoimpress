@@ -11,9 +11,11 @@ export default function Header() {
     const [user, setUser] = React.useState<UserProfile | null>(null);
 
     const handleSignIn = async () => {
+        console.log("Sign in pressed");
         const token = await kinde.login();
+        console.log("After login, token:", token);
         if (token) {
-            // User was authenticated
+            console.log("User signed in:", token);
         }
     };
 
@@ -30,7 +32,6 @@ export default function Header() {
         if (isAuthenticated) {
             checkUserProfile().then(profile => {
                 setUser(profile);
-                console.log(profile)
             });
         }else{
             setUser(null);
