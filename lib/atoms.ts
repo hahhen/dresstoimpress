@@ -1,4 +1,5 @@
-import { atom } from "jotai"
+import { Atom, atom, PrimitiveAtom } from "jotai"
+import { ItemType } from "~/components/draggableItem"
 
 // State of selected pieces
 export const selectedPiecesAtom = atom({
@@ -9,3 +10,9 @@ export const selectedPiecesAtom = atom({
     accessories: [] as string[],
     outfits: [] as string[],
 })
+
+export const clothesForUploadAtom = atom<PrimitiveAtom<ItemType>[]>([])
+
+export const clothesForUploadValuesAtom = atom((get) =>
+  get(clothesForUploadAtom).map((itemAtom) => get(itemAtom))
+);

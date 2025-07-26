@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import { FreeSizeIconButton } from "~/components/iconButton";
 import { Plus } from "~/lib/icons/Plus";
 import { Text } from "~/components/ui/text";
@@ -6,6 +6,7 @@ import BottomSheet from "~/components/bottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React from "react";
 import { database } from "~/lib/client";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 
 export default function CollectionsPage() {
     React.useEffect(() => {
@@ -28,6 +29,22 @@ export default function CollectionsPage() {
                     <Text className="text-secondary-foreground">You can add your collections here.</Text>
                 </View>
             </BottomSheet>
+            <Dialog>
+                <DialogTrigger className="bg-blue-500">
+                   
+                        <Text>A</Text>
+                    
+                </DialogTrigger>
+                <DialogContent className='sm:max-w-[425px] h-[70vh] w-full items-center'>
+                    <Text className='text-2xl text-primary'>Piece 2</Text>
+                    <View className='flex-1 flex flex-wrap flex-row gap-2'>
+
+                        <Text>A</Text>
+                    </View>
+                    {/* </BottomSheetModalProvider> */}
+                    {/* </GestureHandlerRootView> */}
+                </DialogContent>
+            </Dialog>
         </View>
     );
 }

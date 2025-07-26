@@ -4,6 +4,7 @@ import { Platform, StyleSheet, View, type ViewProps } from 'react-native';
 import Animated, { Easing, FadeIn, FadeOut, ZoomIn, ZoomOut } from 'react-native-reanimated';
 import { X } from '~/lib/icons/X';
 import { cn } from '~/lib/utils';
+import { BlurView } from 'expo-blur';
 
 const Dialog = DialogPrimitive.Root;
 
@@ -21,6 +22,7 @@ function DialogOverlayWeb({
 }) {
   const { open } = DialogPrimitive.useRootContext();
   return (
+    // <>
     <DialogPrimitive.Overlay
       className={cn(
         'flex justify-center items-center p-2 absolute top-0 right-0 bottom-0 left-0',
@@ -29,6 +31,8 @@ function DialogOverlayWeb({
       )}
       {...props}
     />
+    // {/* <BlurView style={{flex: 1}} /> */}
+    // {/* </> */}
   );
 }
 
@@ -46,9 +50,16 @@ function DialogOverlayNative({
       className={cn('flex justify-center items-center p-2', className)}
       {...props}
     >
+      <BlurView
+        tint='dark'
+        intensity={20}
+        style={StyleSheet.absoluteFill}
+        className="rounded-lg"
+        experimentalBlurMethod='dimezisBlurView'
+      />
       <Animated.View className={"w-full"}
-        entering={ZoomIn.duration(200).easing(Easing.out(Easing.ease))}
-        exiting={ZoomOut.duration(150).easing(Easing.out(Easing.ease))}
+        entering={ZoomIn.duration(200)}
+        exiting={ZoomOut.duration(150)}
       >
         {children}
       </Animated.View>

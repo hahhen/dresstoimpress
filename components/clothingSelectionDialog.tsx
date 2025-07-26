@@ -12,8 +12,9 @@ import {
 import { createRows } from "~/lib/utils";
 import { useAtom } from "jotai";
 import { selectedPiecesAtom } from "~/lib/atoms";
-import { FlatList, GestureHandlerRootView, Pressable } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
+import { Pressable } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { LinearGradient } from "expo-linear-gradient";
@@ -44,9 +45,16 @@ export default function ClothingSelectionDialog({ asChild = false, children, lab
     };
     return (
         <>
-            <Pressable onPress={handlePresentModalPress}>
-                {children}
-            </Pressable>
+            {asChild && React.isValidElement(children)
+                ? React.cloneElement(children as React.ReactElement<any>, {
+                    onPress: handlePresentModalPress,
+                })
+                : (
+                    <Pressable onPress={handlePresentModalPress}>
+                        {children}
+                    </Pressable>
+                )
+            }
             <BottomSheetModal
                 index={1}
                 enableDismissOnClose={true}

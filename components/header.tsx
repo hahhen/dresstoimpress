@@ -2,8 +2,10 @@ import { useKindeAuth } from "@kinde/expo";
 import { Pressable, View } from "react-native";
 import { Text } from "~/components/ui/text";
 import { Image } from "expo-image";
-import { getUserProfile, getFlag, getRoles, UserProfile } from "@kinde/expo/utils";
+import { getUserProfile, UserProfile, getRawToken } from "@kinde/expo/utils";
 import * as React from "react";
+import { account, functions } from "~/lib/client";
+import { AppwriteException } from "react-native-appwrite";
 
 export default function Header() {
     const kinde = useKindeAuth();
@@ -11,12 +13,7 @@ export default function Header() {
     const [user, setUser] = React.useState<UserProfile | null>(null);
 
     const handleSignIn = async () => {
-        console.log("Sign in pressed");
-        const token = await kinde.login();
-        console.log("After login, token:", token);
-        if (token) {
-            console.log("User signed in:", token);
-        }
+        await kinde.login();
     };
 
     const checkUserProfile = async () => {
@@ -26,17 +23,44 @@ export default function Header() {
 
     const handleSignOut = async () => {
         await kinde.logout();
+        await account.deleteSession('current');
     };
+
+    const makeAppWriteSession = async () => {
+        try {
+            const appWriteSession = await account.getSession('current');
+        } catch (error) {
+            if (error instanceof AppwriteException && error.code === 401) {
+                const rawToken = await getRawToken();
+                const appwriteUserIdAndToken = await functions.createExecution(
+                    process.env.EXPO_PUBLIC_APPWRITE_FUNCTION_KINDE_SESSION!,
+                    JSON.stringify({ kindeToken: rawToken }),
+                    false
+                );
+                const body = JSON.parse(appwriteUserIdAndToken.responseBody);
+                try {
+                    await account.createSession(body.userId, body.secret);
+                } catch (error) {
+                    console.error("Error creating session:", error);
+                }
+            } else {
+                console.error('An unexpected error occurred:', error);
+            }
+        }
+    }
 
     React.useEffect(() => {
         if (isAuthenticated) {
-            checkUserProfile().then(profile => {
+            makeAppWriteSession();
+            checkUserProfile().then((profile) => {
                 setUser(profile);
             });
-        }else{
+        } else {
             setUser(null);
+            account.deleteSession('current');
         }
     }, [isAuthenticated]);
+
     return (
         <View className='h-16 flex flex-row items-center justify-between'>
             <Text className='text-muted'>tiny closet</Text>

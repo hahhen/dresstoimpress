@@ -15,6 +15,7 @@ import Dice from "~/assets/icons/Dice";
 import Caret from "~/assets/icons/Caret";
 import ClothingSelectionDialog, { PieceType } from "~/components/clothingSelectionDialog";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import AvatarRender from "~/components/avatarRender";
 
 export default function AvatarPage() {
     const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
@@ -75,6 +76,7 @@ export default function AvatarPage() {
             }
         ]
     }
+    
     return (
         <View className="flex flex-row justify-between mt-10">
             <View className="basis-[21.5%] gap-10">
@@ -105,7 +107,9 @@ export default function AvatarPage() {
                     </Text>
                 </View>
             </View>
-            <View className="basis-[57%]"></View>
+            <View className="basis-[57%]">
+                <AvatarRender />
+            </View>
             <View className="basis-[21.5%] mt-40">
                 <View className="flex gap-56">
                     {buttons.right.map((button, index) => (

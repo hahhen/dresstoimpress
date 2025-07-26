@@ -1,4 +1,4 @@
-import { Animated } from "react-native";
+import { Animated, StyleProp, ViewStyle } from "react-native";
 import * as React from "react";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -92,7 +92,7 @@ export function FreeHeightIconButton({ className, children, onPress }: { classNa
     )
 }
 
-export function FreeSizeIconButton({ className, children, onPress }: { className?: string, children?: React.ReactNode, onPress?: () => void }) {
+export function FreeSizeIconButton({ className, children, onPress, style }: { className?: string, children?: React.ReactNode, onPress?: () => void, style?: StyleProp<ViewStyle>}) {
     const { isDarkColorScheme } = useColorScheme();
     const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
     const scale = React.useRef(new Animated.Value(1)).current;
@@ -111,7 +111,7 @@ export function FreeSizeIconButton({ className, children, onPress }: { className
         }).start();
     };
     return (
-        <Animated.View style={{ transform: [{ scale }] }} className={cn(className)}>
+        <Animated.View style={[{ transform: [{ scale }] }, style]} className={cn(className)}>
             <Button
                 onPressIn={handlePressIn}
                 onPressOut={handlePressOut}
@@ -119,6 +119,7 @@ export function FreeSizeIconButton({ className, children, onPress }: { className
                 className={cn(className, "overflow-hidden border border-secondary-foreground rounded-[12px] flex py-2 relative")}
                 size={"custom"}
                 variant={"secondary"}
+                style={style}
             >
                 <LinearGradient
                     colors={isDarkColorScheme ? ["#3B3748", theme.secondary] : [theme.secondary, "#EEE9F8"]}

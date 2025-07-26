@@ -40,7 +40,7 @@ export default function TabLayout() {
                 }
             }}>
             <Tabs.Screen
-                name="(clothes)/clothes"
+                name="(clothes)"
                 options={{
                     title: 'Clothes',
                     tabBarIcon: ({ color }) => <Shirt width={40} fill={color} />,

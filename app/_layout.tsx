@@ -72,19 +72,6 @@ export default function RootLayout() {
 
     return (
         <KindeAuthProvider
-            callbacks={
-                {
-                    onSuccess: async (user, state, context) => {
-                        console.log("User authenticated:", user);
-                    },
-                    onError: async(error, state, context) => {
-                        console.error("Authentication error:", error);
-                    },
-                    onEvent: async (event, state, context) => {
-                        console.log("Authentication event:", event);
-                    }
-                }
-            }
             config={{
                 domain: process.env.EXPO_PUBLIC_KINDE_ISSUER_URL,
                 clientId: process.env.EXPO_PUBLIC_KINDE_CLIENT_ID,
@@ -96,22 +83,22 @@ export default function RootLayout() {
                         <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}
                         />
                         <SafeAreaView className='flex-1 bg-background px-7'>
-                            <Stack
-                            // screenOptions={{
-                            //     headerShown: false,
-                            // }}
-                            >
+                            <Stack>
                                 <Stack.Screen options={{
                                     header: () => (
                                         <Header />
                                     )
                                 }} name="(tabs)" />
+                                <Stack.Screen options={{
+                                    presentation: 'modal',
+                                    headerShown: false
+                                }} name="uploading" />
                             </Stack>
                         </SafeAreaView>
+                        <PortalHost />
                     </BottomSheetModalProvider>
                 </ThemeProvider>
             </GestureHandlerRootView>
-            <PortalHost />
         </KindeAuthProvider>
     )
 }
