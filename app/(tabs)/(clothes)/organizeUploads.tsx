@@ -16,6 +16,7 @@ import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { Plus } from "~/lib/icons/Plus";
 import { router } from 'expo-router';
+import useTheme from '~/lib/theme';
 
 export default function OrganizeUploads() {
     const [atomItems, setAtomItems] = useAtom(clothesForUploadAtom);
@@ -34,8 +35,7 @@ export default function OrganizeUploads() {
     const historyRef = React.useRef<ItemType[][]>([]);
     const futureRef = React.useRef<ItemType[][]>([]);
 
-    const { isDarkColorScheme } = useColorScheme();
-    const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
+    const theme = useTheme();
 
     //---------------------Utility functions---------------------
 

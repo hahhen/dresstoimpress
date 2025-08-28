@@ -10,6 +10,9 @@ export default function SearchStack(){
             <Stack.Screen name="organizeUploads" options={{
                 headerShown: false
             }} />
+            <Stack.Screen name="clothesCards" options={{
+                headerShown: false
+            }} />
         </Stack>
     )
 }

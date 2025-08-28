@@ -16,11 +16,11 @@ import Caret from "~/assets/icons/Caret";
 import ClothingSelectionDialog, { PieceType } from "~/components/clothingSelectionDialog";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import AvatarRender from "~/components/avatarRender";
+import { router } from "expo-router";
 
 export default function AvatarPage() {
     const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
     const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
-    const bottomSheetRef = React.useRef<BottomSheet>(null);
 
     const buttons = {
         left: [

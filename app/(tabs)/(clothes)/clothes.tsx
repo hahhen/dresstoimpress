@@ -41,7 +41,7 @@ export default function ClothesPage() {
                 <Text className="leading-none text-primary text-2xl">You have no clothes ;&#40;</Text>
                 <Text className="leading-none text-primary text-2xl">Let&apos;s change that!</Text>
             </View>
-            <Link href="/(clothes)/organizeUploads" asChild>
+            <Link href="/(clothes)/clothesCards" asChild>
                 <FreeSizeIconButton className="flex flex-row px-16">
                     <Text className="native:text-sm">Organize uploads</Text>
                 </FreeSizeIconButton>

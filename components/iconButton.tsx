@@ -1,4 +1,4 @@
-import { Animated, StyleProp, ViewStyle } from "react-native";
+import { Animated, GestureResponderEvent, StyleProp, ViewStyle } from "react-native";
 import * as React from "react";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -92,7 +92,7 @@ export function FreeHeightIconButton({ className, children, onPress }: { classNa
     )
 }
 
-export function FreeSizeIconButton({ className, children, onPress, style }: { className?: string, children?: React.ReactNode, onPress?: () => void, style?: StyleProp<ViewStyle>}) {
+export function FreeSizeIconButton({ className, children, onPress, style }: { className?: string, children?: React.ReactNode, onPress?: (e: GestureResponderEvent) => void, style?: StyleProp<ViewStyle>}) {
     const { isDarkColorScheme } = useColorScheme();
     const theme = isDarkColorScheme ? NAV_THEME.dark : NAV_THEME.light;
     const scale = React.useRef(new Animated.Value(1)).current;

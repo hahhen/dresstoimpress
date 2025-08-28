@@ -1,20 +1,20 @@
 import { Stack } from 'expo-router';
 import { Theme, ThemeProvider, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform } from 'react-native';
 import * as React from 'react';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/lib/constants';
 import "../global.css"
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Inter_400Regular, Inter_600SemiBold, useFonts } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
-import { Text } from '~/components/ui/text';
 import { PortalHost } from '@rn-primitives/portal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { KindeAuthProvider } from '@kinde/expo';
 import Header from '~/components/header';
+import { Toaster } from 'sonner-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -80,8 +80,7 @@ export default function RootLayout() {
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
                     <BottomSheetModalProvider>
-                        <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}
-                        />
+                        <StatusBar style={isDarkColorScheme ? 'light' : 'dark'}/>
                         <SafeAreaView className='flex-1 bg-background px-7'>
                             <Stack>
                                 <Stack.Screen options={{
@@ -90,10 +89,10 @@ export default function RootLayout() {
                                     )
                                 }} name="(tabs)" />
                                 <Stack.Screen options={{
-                                    presentation: 'modal',
                                     headerShown: false
                                 }} name="uploading" />
                             </Stack>
+                            <Toaster />
                         </SafeAreaView>
                         <PortalHost />
                     </BottomSheetModalProvider>
