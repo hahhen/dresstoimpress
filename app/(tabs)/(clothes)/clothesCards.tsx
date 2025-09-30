@@ -1,8 +1,8 @@
 import { Image } from "expo-image";
 import { Dimensions, Pressable } from 'react-native';
-import { atom, PrimitiveAtom, useAtom, useAtomValue } from "jotai";
+import { atom, PrimitiveAtom, SetStateAction, useAtom, useAtomValue } from "jotai";
 import { StyleSheet, View } from "react-native";
-import { clothesForUploadAtom, clothesForUploadValuesAtom } from "~/lib/atoms";
+import { clothesForUploadAtom, clothesForUploadValuesAtom, hasRunAtom } from "~/lib/atoms";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "~/components/ui/text";
 import { FreeSizeIconButton } from "~/components/iconButton";
@@ -36,7 +36,7 @@ export default function ClothesCards() {
         setSteps((prev) => ({ ...prev, [item.id]: prev[item.id] + 1 }));
     }
 
-    function Step1({ item }: { item: ItemType }) {
+    function Step1({ item, setItem }: { item: ItemType, setItem: (update: SetStateAction<ItemType>) => void }) {
         const [accepted, setAccepted] = React.useState(false);
         useEffect(() => {
             if (accepted) {
@@ -78,48 +78,42 @@ export default function ClothesCards() {
         )
     }
 
-    function Step2({ item }: { item: ItemType }) {
-        const [generating, setGenerating] = React.useState([false, true, true, true]);
+    function Step2({ item, setItem }: { item: ItemType, setItem: (update: SetStateAction<ItemType>) => void }) {
+        const [generating, setGenerating] = React.useState([false, false, false, false]);
         const [accepted, setAccepted] = React.useState([true, false, false, false]);
-        const hasRun = React.useRef(false);
 
         async function generateLeftImage() {
             setGenerating(prev => [prev[0], true, prev[2], prev[3]]);
             const res = await generateImages(item, 1);
-            setItemsForUploadAtom((prev) => {
-                const index = itemsForUpload.findIndex(i => i.id === item.id);
-                var newItems = [...prev];
-                newItems[index] = atom({ ...itemsForUpload[index], generatedImages: { ...itemsForUpload[index].generatedImages, left: [res.images[0]] } }) as PrimitiveAtom<ItemType>;
-                return newItems;
-            });
+            if (res.success)
+                setItem(prev => ({ ...prev, generatedImages: { ...prev.generatedImages, left: [res.images[0]] } }));
+            else
+                toast.error("Failed to generate left image. Please try again.");
             setGenerating(prev => [prev[0], false, prev[2], prev[3]]);
         }
+
         async function generateRightImage() {
             setGenerating(prev => [prev[0], prev[1], true, prev[3]]);
-            const res = await generateImages(item, 1);
-            setItemsForUploadAtom((prev) => {
-                const index = itemsForUpload.findIndex(i => i.id === item.id);
-                var newItems = [...prev];
-                newItems[index] = atom({ ...itemsForUpload[index], generatedImages: { ...itemsForUpload[index].generatedImages, left: [res.images[0]] } }) as PrimitiveAtom<ItemType>;
-                return newItems;
-            });
+            const res = await generateImages(item, 2);
+            if (res.success)
+                setItem(prev => ({ ...prev, generatedImages: { ...prev.generatedImages, right: [res.images[0]] } }));
+            else
+                toast.error("Failed to generate right image. Please try again.");
             setGenerating(prev => [prev[0], prev[1], false, prev[3]]);
         }
         async function generateBackImage() {
             setGenerating(prev => [prev[0], prev[1], prev[2], true]);
-            const res = await generateImages(item, 1);
-            setItemsForUploadAtom((prev) => {
-                const index = itemsForUpload.findIndex(i => i.id === item.id);
-                var newItems = [...prev];
-                newItems[index] = atom({ ...itemsForUpload[index], generatedImages: { ...itemsForUpload[index].generatedImages, left: [res.images[0]] } }) as PrimitiveAtom<ItemType>;
-                return newItems;
-            });
+            const res = await generateImages(item, 3);
+            if (res.success)
+                setItem(prev => ({ ...prev, generatedImages: { ...prev.generatedImages, back: [res.images[0]] } }));
+            else
+                toast.error("Failed to generate back image. Please try again.");
             setGenerating(prev => [prev[0], prev[1], prev[2], false]);
         }
 
         useEffect(() => {
-            if (hasRun.current) return;
-            hasRun.current = true;
+            if (item.hasRun?.model) return;
+            setItem(prev => ({ ...prev, hasRun: { ...prev.hasRun, sideviews: true } }));
             generateLeftImage();
             generateRightImage();
             generateBackImage();
@@ -145,6 +139,8 @@ export default function ClothesCards() {
                     } catch (err) {
                         toast.error("Failed to generate images. Please try again.");
                     }
+            } else {
+                nextStep({ item });
             }
         }
         // useEffect(() => {
@@ -170,10 +166,10 @@ export default function ClothesCards() {
                             setAccepted((prev) => ([prev[0], !prev[1], prev[2], prev[3]]))
                         }}>
                             <View style={accepted[1] && { filter: "brightness(50%)" }}>
-                                <Image source={{ uri: "data:image/jpeg;base64," + item.generatedImages?.front?.[0] }} style={{ width: "100%", aspectRatio: 1, borderRadius: 8 }} />
+                                <Image source={{ uri: "data:image/jpeg;base64," + item.generatedImages?.left?.[0] }} style={{ width: "100%", aspectRatio: 1, borderRadius: 8 }} />
                             </View>
                             {accepted[1] && <Check size={50} style={{ position: "absolute", top: "35%", right: "35%" }} stroke={"#fff"} />}
-                            {generating[3] && <Generating />}
+                            {generating[1] && <Generating />}
                         </Pressable>
                     </View>
 
@@ -182,17 +178,17 @@ export default function ClothesCards() {
                             setAccepted((prev) => ([prev[0], prev[1], !prev[2], prev[3]]))
                         }}>
                             <View style={accepted[2] && { filter: "brightness(50%)" }}>
-                                <Image source={{ uri: "data:image/jpeg;base64," + item.generatedImages?.front?.[0] }} style={{ width: "100%", aspectRatio: 1, borderRadius: 8 }} />
+                                <Image source={{ uri: "data:image/jpeg;base64," + item.generatedImages?.right?.[0] }} style={{ width: "100%", aspectRatio: 1, borderRadius: 8 }} />
                             </View>
                             {accepted[2] && <Check size={50} style={{ position: "absolute", top: "35%", right: "35%" }} stroke={"#fff"} />}
-                            {generating[3] && <Generating />}
+                            {generating[2] && <Generating />}
                         </Pressable>
 
                         <Pressable className="flex-1 relative" onPress={() => {
                             setAccepted((prev) => ([prev[0], prev[1], prev[2], !prev[3]]))
                         }}>
                             <View style={accepted[3] && { filter: "brightness(50%)" }}>
-                                <Image source={{ uri: "data:image/jpeg;base64," + item.generatedImages?.front?.[0] }} style={{ width: "100%", aspectRatio: 1, borderRadius: 8 }} />
+                                <Image source={{ uri: "data:image/jpeg;base64," + item.generatedImages?.back?.[0] }} style={{ width: "100%", aspectRatio: 1, borderRadius: 8 }} />
                             </View>
                             {accepted[3] && <Check size={50} style={{ position: "absolute", top: "35%", right: "35%" }} stroke={"#fff"} />}
                             {generating[3] && <Generating />}
@@ -209,7 +205,7 @@ export default function ClothesCards() {
                     </View>
                     <View className="flex flex-row" >
                         <FreeSizeIconButton className='p-2 flex gap-2 flex-1 flex-row' onPress={() => {
-
+                            update();
                         }}>
                             <RotateCcw stroke={theme.primary} />
                             <Text className='text-primary native:text-xs'>Update</Text>
@@ -220,26 +216,38 @@ export default function ClothesCards() {
         )
     }
 
+    function Step3({ item, setItem }: { item: ItemType, setItem: (update: SetStateAction<ItemType>) => void }) {
+        useEffect(() => {
+            if (item.hasRun?.model) return;
+            setItem(prev => ({ ...prev, hasRun: { ...prev.hasRun, model: true } }));
+            
+        }, [])
+    }
+
     return (
         <View className="flex-1">
             <Carousel
+                autoFillData={false}
                 ref={ref}
                 width={width}
                 height={height}
-                data={itemsForUpload}
+                data={itemsForUploadAtom}
                 mode={"horizontal-stack"}
-                renderItem={({ item }) => (
-                    <View className="flex-1 items-center gap-2 rounded-xl bg-secondary border-secondary-foreground border p-4">
-                        {(() => {
-                            switch (steps[item.id]) {
-                                case 0:
-                                    return <Step1 item={item} />;
-                                case 1:
-                                    return <Step2 item={item} />;
-                            }
-                        })()}
-                    </View>
-                )}
+                renderItem={({ item }) => {
+                    const [itemDeatom, setItemDeatom] = useAtom(item);
+                    return (
+                        <View className="flex-1 items-center gap-2 rounded-xl bg-secondary border-secondary-foreground border p-4">
+                            {(() => {
+                                switch (steps[itemDeatom.id]) {
+                                    case 0:
+                                        return <Step1 item={itemDeatom} setItem={setItemDeatom} />;
+                                    case 1:
+                                        return <Step2 item={itemDeatom} setItem={setItemDeatom} />;
+                                }
+                            })()}
+                        </View>
+                    )
+                }}
             />
             {/* {itemsForUpload.length > 0 && (
                 <Swiper

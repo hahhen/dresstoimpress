@@ -14,5 +14,7 @@ export const selectedPiecesAtom = atom({
 export const clothesForUploadAtom = atom<PrimitiveAtom<ItemType>[]>([])
 
 export const clothesForUploadValuesAtom = atom((get) =>
-  get(clothesForUploadAtom).map((itemAtom) => get(itemAtom))
+    get(clothesForUploadAtom).map((itemAtom) => get(itemAtom))
 );
+
+export const hasRunAtom = atom(false);

@@ -57,7 +57,8 @@ type ItemType = {
     image?: string;
     items?: ItemType[];
     itemFile?: ImagePickerAsset;
-    generatedImages?: { front?: string[], back?: string[], left?: string[], right?: string[]};
+    generatedImages?: { front?: string[], back?: string[], left?: string[], right?: string[] };
+    hasRun?: { sideviews?: boolean, model?: boolean | false };
 };
 
 const createPositions = (items: ItemType[]) =>
